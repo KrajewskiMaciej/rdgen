@@ -365,6 +365,8 @@ jobs:
           shell: /bin/bash
           install: |
             apt-get update -y
+            apt-get install -y --reinstall ca-certificates
+            update-ca-certificates
             echo -e "installing deps"
             apt-get install -y \
                build-essential \
@@ -841,6 +843,8 @@ jobs:
           shell: /bin/bash
           install: |
             apt-get update -y
+            apt-get install -y --reinstall ca-certificates
+            update-ca-certificates
             apt-get install -y git flatpak flatpak-builder
           run: |
             # disable git safe.directory
