@@ -727,7 +727,7 @@ jobs:
       - name: Build appimage package
         shell: bash
         run: |
-          mv appimage/rustdesk.deb "appimage/${{ env.filename }}.deb"
+          mv appimage/rustdesk.deb "appimage/${{ env.appname }}.deb"
           sed -ie "s|rustdesk|${{ env.appname }}|g" appimage/AppImageBuilder-${{ matrix.job.arch }}.yml
 
            # install libarchive-tools for bsdtar command used in AppImageBuilder.yml
@@ -826,6 +826,15 @@ jobs:
       - name: Rename Binary
         run: |
           mv ${{ env.filename }}-${{ matrix.job.arch }}.deb flatpak/rustdesk.deb
+          if [ "${{ env.appname }}" != "rustdesk" ]; then
+            sed -i \
+              -e 's|"command": "rustdesk"|"command": "${{ env.appname }}"|' \
+              -e 's|"rename-desktop-file": "rustdesk.desktop"|"rename-desktop-file": "${{ env.appname }}.desktop"|' \
+              -e 's|"rename-icon": "rustdesk"|"rename-icon": "${{ env.appname }}"|' \
+              -e 's|/app/share/rustdesk/rustdesk|/app/share/${{ env.appname }}/${{ env.appname }}|g' \
+              -e 's|/app/bin/rustdesk|/app/bin/${{ env.appname }}|g' \
+              flatpak/rustdesk.json
+          fi
 
       - uses: rustdesk-org/run-on-arch-action@amd64-support
         name: Build rustdesk flatpak package for ${{ matrix.job.arch }}
