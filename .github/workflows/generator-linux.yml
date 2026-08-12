@@ -78,9 +78,12 @@ jobs:
           }
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          # nothing here needs git creds; avoids the post-cleanup http.extraheader warning
+          persist-credentials: false
         
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: encrypted-secrets-zip
 
@@ -90,7 +93,7 @@ jobs:
           zip_password: ${{ secrets.ZIP_PASSWORD }}
 
       - name: Export GitHub Actions cache environment variables
-        uses: actions/github-script@v6
+        uses: actions/github-script@v8
         with:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
@@ -124,7 +127,7 @@ jobs:
 
       - name: Checkout source code
         if: ${{ env.VERSION != 'master' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: rustdesk/rustdesk
           ref: refs/tags/${{ env.VERSION }}
@@ -132,7 +135,7 @@ jobs:
 
       - name: Checkout source code
         if: ${{ env.VERSION == 'master' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: rustdesk/rustdesk
           submodules: recursive
@@ -168,7 +171,7 @@ jobs:
 
       - name: Restore bridge files
         if: matrix.job.arch == 'x86_64' || env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v7
         with:
           name: bridge-artifact
           path: ./
@@ -203,7 +206,7 @@ jobs:
 
       - name: icon stuff
         if: ${{ env.iconlink_url != 'false' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -264,7 +267,7 @@ jobs:
           sed -i -e 's|Purslane Ltd|${{ env.compname }}|' ./src/main.rs
           
       - name: allow custom.txt
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -312,7 +315,7 @@ jobs:
 
       - name: use X for offline display instead of orange circle
         if: env.xOffline == 'true'
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -324,7 +327,7 @@ jobs:
 
       - name: hide-cm
         if: env.hidecm == 'true'
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -343,7 +346,7 @@ jobs:
 
       - name: Restore bridge files
         if: matrix.job.arch == 'x86_64' || env.UPLOAD_ARTIFACT == 'true'
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v7
         with:
           name: bridge-artifact
           path: ./
@@ -607,7 +610,7 @@ jobs:
 
       - name: send file to rdgen server
         if: ${{ env.rdgen == 'true' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -621,7 +624,7 @@ jobs:
 
       - name: send file to api server
         if: ${{ env.rdgen == 'false' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -634,7 +637,7 @@ jobs:
             curl -i -X POST -H "Content-Type: multipart/form-data" -H "Authorization: Bearer ${{ env.token }}" -F "file=@./output/${{ env.filename }}-${{ matrix.job.arch }}.pkg.tar.zst" ${{ env.apiServer }}/api/save_custom_client || true
 
       - name: Upload deb
-        uses: actions/upload-artifact@master
+        uses: actions/upload-artifact@v6
         if: env.UPLOAD_ARTIFACT == 'true'
         with:
           name: ${{ env.filename }}-${{ matrix.job.arch }}.deb
@@ -652,9 +655,12 @@ jobs:
           - { target: aarch64-unknown-linux-gnu, arch: aarch64 }
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          # nothing here needs git creds; avoids the post-cleanup http.extraheader warning
+          persist-credentials: false
         
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: encrypted-secrets-zip
 
@@ -665,7 +671,7 @@ jobs:
 
       - name: Checkout source code
         if: ${{ env.VERSION != 'master' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: rustdesk/rustdesk
           ref: refs/tags/${{ env.VERSION }}
@@ -673,13 +679,13 @@ jobs:
 
       - name: Checkout source code
         if: ${{ env.VERSION == 'master' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: rustdesk/rustdesk
           submodules: recursive
 
       - name: Download Binary
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v7
         with:
           name: ${{ env.filename }}-${{ matrix.job.arch }}.deb
           path: .
@@ -690,7 +696,7 @@ jobs:
 
       - name: icon stuff
         if: ${{ env.iconlink_url != 'false' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -745,7 +751,7 @@ jobs:
 
       - name: send file to rdgen server
         if: ${{ env.rdgen == 'true' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -756,7 +762,7 @@ jobs:
           
       - name: send file to api server
         if: ${{ env.rdgen == 'false' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -791,9 +797,12 @@ jobs:
             }
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          # nothing here needs git creds; avoids the post-cleanup http.extraheader warning
+          persist-credentials: false
         
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: encrypted-secrets-zip
 
@@ -804,7 +813,7 @@ jobs:
 
       - name: Checkout source code
         if: ${{ env.VERSION != 'master' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: rustdesk/rustdesk
           ref: refs/tags/${{ env.VERSION }}
@@ -812,13 +821,13 @@ jobs:
 
       - name: Checkout source code
         if: ${{ env.VERSION == 'master' }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: rustdesk/rustdesk
           submodules: recursive
 
       - name: Download Binary
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v7
         with:
           name: ${{ env.filename }}-${{ matrix.job.arch }}.deb
           path: .
@@ -869,7 +878,7 @@ jobs:
 
       - name: send file to rdgen server
         if: ${{ env.rdgen == 'true' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -880,7 +889,7 @@ jobs:
           
       - name: send file to api server
         if: ${{ env.rdgen == 'false' }}
-        uses: nick-fields/retry@v3
+        uses: nick-fields/retry@v4
         with:
           timeout_minutes: 5
           max_attempts: 3
@@ -895,9 +904,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
+        with:
+          # nothing here needs git creds; avoids the post-cleanup http.extraheader warning
+          persist-credentials: false
         
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: encrypted-secrets-zip
 
@@ -909,7 +921,7 @@ jobs:
       - name: Finalize and Cleanup zip/json
         if: always() # Run even if previous steps fail
         continue-on-error: true
-        uses: fjogeleit/http-request-action@v1
+        uses: fjogeleit/http-request-action@v2
         with:
           url: "${{ secrets.GENURL }}/cleanzip"
           method: 'POST'
@@ -926,7 +938,7 @@ jobs:
         run: |
           echo "STATUS_URL=${{ env.apiServer }}/api/updategh" >> $GITHUB_ENV
 
-      - uses: geekyeggo/delete-artifact@v5
+      - uses: geekyeggo/delete-artifact@v6
         continue-on-error: true
         with:
             name: ${{ env.filename }}-*.deb
@@ -938,6 +950,6 @@ jobs:
     if: always()
     steps:
       - name: Delete secrets artifact
-        uses: geekyeggo/delete-artifact@v5
+        uses: geekyeggo/delete-artifact@v6
         with:
           name: encrypted-secrets-zip
