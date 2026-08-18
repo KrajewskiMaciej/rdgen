@@ -376,8 +376,6 @@ jobs:
             --volume "${PWD}:/workspace"
             --volume "/opt/artifacts:/opt/artifacts"
           shell: /bin/bash
-          env: |
-            CUSTOM_TXT_PATH=${{ env.CUSTOM_TXT_PATH }}
           install: |
             apt-get update -y
             apt-get install -y --reinstall ca-certificates
