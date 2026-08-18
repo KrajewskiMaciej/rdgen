@@ -281,6 +281,7 @@ jobs:
             wget https://raw.githubusercontent.com/bryangerlach/rdgen/refs/heads/master/.github/patches/removeSetupServerTip.diff
             git apply removeSetupServerTip.diff
             echo -n "${{ env.custom }}" | cat > ./custom_.txt
+            echo "CUSTOM_TXT_PATH=$(realpath ./custom_.txt)" >> $GITHUB_ENV
             # sed -i '/intl:/a \ \ archive: ^3.6.1' ./flutter/pubspec.yaml
             sed -i -e 's|https://admin.rustdesk.com|${{ env.apiServer }}|' ./src/common.rs
           
@@ -375,6 +376,8 @@ jobs:
             --volume "${PWD}:/workspace"
             --volume "/opt/artifacts:/opt/artifacts"
           shell: /bin/bash
+          env: |
+            CUSTOM_TXT_PATH=${{ env.CUSTOM_TXT_PATH }}
           install: |
             apt-get update -y
             apt-get install -y --reinstall ca-certificates
@@ -514,7 +517,7 @@ jobs:
             export CARGO_INCREMENTAL=0
             export DEB_ARCH=${{ matrix.job.deb_arch }}
             mkdir -p flutter/tmpdeb/usr/share/rustdesk
-            cp ./custom_.txt ./flutter/tmpdeb/usr/share/rustdesk/custom_.txt
+            cp "${{ env.CUSTOM_TXT_PATH }}" ./flutter/tmpdeb/usr/share/rustdesk/custom_.txt
             if [[ "${{ env.logolink_url }}" != "false" ]]; then
               wget -O ./flutter/assets/logo.png ${{ env.logolink_url }}/get_png?filename=${{ env.logolink_file }}"&"uuid=${{ env.logolink_uuid }}
             fi
