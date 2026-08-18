@@ -284,6 +284,15 @@ jobs:
             # sed -i '/intl:/a \ \ archive: ^3.6.1' ./flutter/pubspec.yaml
             sed -i -e 's|https://admin.rustdesk.com|${{ env.apiServer }}|' ./src/common.rs
           
+      - name: DEBUG - verify custom.txt location and content
+        shell: bash
+        run: |
+          pwd
+          ls -la ./custom_.txt
+          echo "--- zawartosc ---"
+          cat ./custom_.txt
+          echo "--- koniec ---"
+
       - name: change url to custom
         if: env.urlLink != 'https://rustdesk.com'
         continue-on-error: true
@@ -494,6 +503,9 @@ jobs:
               git apply ${{ github.workspace }}/.github/patches/flutter_3.24.4_dropdown_menu_enableFilter.diff
               popd
             fi
+
+            pwd
+            ls -la ./custom_.txt || echo "BRAK PLIKU W TYM MIEJSCU"
 
             # build flutter
             pushd /workspace
